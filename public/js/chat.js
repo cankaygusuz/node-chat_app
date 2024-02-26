@@ -15,25 +15,6 @@ const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML
 
 const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true }) //tarayıcıdaki parametreleri aldı
 
-const autoscroll = () => {
-    const $newMessage = $messages.lastElementChild
-
-    const newMessageStyles = getComputedStyle($newMessage)
-    const newMessageMargin = parseInt(newMessageStyles.marginBottom)
-    const newMessageHeight = $newMessage.offsetHeight + newMessageMargin
-    console.log(newMessageStyles)
-
-    const visibleHeight = $messages.offsetHeight
-
-    const containerHeight = $messages.scrollHeight
-
-    const scrollOffset = $messages.scrollTop + visibleHeight
-
-    if (containerHeight - newMessageHeight <= scrollOffset) {
-        $messages.scrollTop = $messages.scrollHeight
-    }
-}
-
 socket.on('information', (message) => {
     console.log(message)
     const html = Mustache.render(messageTemplate, {
@@ -41,7 +22,6 @@ socket.on('information', (message) => {
         createdAt: moment(message.createdAt).format('h:mm')
     })
     $messages.insertAdjacentHTML('beforeend', html)
-    autoscroll()    
 })
 
 $messageForm.addEventListener('submit', (e) => {
@@ -57,6 +37,8 @@ $messageForm.addEventListener('submit', (e) => {
         }
         console.log(message)
         window.scrollTo(0, document.body.scrollHeight); 
+        var objDiv = document.getElementById("messages"); //scroll
+        objDiv.scrollTop = objDiv.scrollHeight;
     }) //kursta sendMessage
 })
 socket.on('message', (message, userName) => {
@@ -97,6 +79,8 @@ $locationButton.addEventListener('click', () => {
             }, ()=> {
                 console.log('Location has been shared')
                 $locationButton.removeAttribute('disabled')
+                var objDiv = document.getElementById("messages"); //scroll
+                objDiv.scrollTop = objDiv.scrollHeight;
             })
         })
 })
